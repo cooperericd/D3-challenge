@@ -1,4 +1,3 @@
-// @TODO: YOUR CODE HERE!
 //Step 1: Set up the chart
 var svgWidth = 800;
 var svgHeight = 500;
@@ -37,13 +36,13 @@ d3.csv("data.csv").then(function(stateData) {
         d.poverty = +d.poverty;
         d.healthcare = +d.healthcare;
     });
-
+    
     // Step 5: Create the scales for the chart
 
-    var xMin = d3.min(stateData, d => d.healthcare);
-    var xMax = d3.max(stateData, d => d.healthcare);
-    var yMin = d3.min(stateData, d => d.poverty);
-    var yMax = d3.max(stateData, d => d.poverty);
+    var xMin = d3.min(stateData, d => d.poverty);
+    var xMax = d3.max(stateData, d => d.poverty);
+    var yMin = d3.min(stateData, d => d.healthcare);
+    var yMax = d3.max(stateData, d => d.healthcare);
 
     var xLinearScale = d3.scaleLinear()
         .domain([xMin - 1, xMax + 1])
@@ -67,41 +66,42 @@ d3.csv("data.csv").then(function(stateData) {
     chartGroup.append("g").call(leftAxis);
 
     // Add circles
-    var circles = chartGroup.append("g")
-        .selectAll("circle")
-        .data(stateData)
-        .enter()
+    var circles = chartGroup.selectAll("g circles").data(stateData).enter();
+
+    circles
         .append("circle")
-            .attr("cx", function(d) {
-                return xLinearScale(d.healthcare);
-            })
-            .attr("cy", function(d) {
-                return yLinearScale(d.poverty);
-            })
-            .attr("r", 8)
-            .style("fill", "#69b3a2")
+        .attr("cx", function(d) {
+            return xLinearScale(d.poverty);
+        })
+        .attr("cy", function(d) {
+            return yLinearScale(d.healthcare);
+        })
+        .attr("r", 11)
+        .style("fill", d3.color("steelblue"));   
 
     // Append axes titles
     chartGroup.append("text")
         .attr("transform", `translate(${(width / 2)-70}, ${height + margin.top + 20})`)
-        .text("Lacks Healthcare (%)");
+        .text("In Poverty (%)");
 
     chartGroup.append("text")
         .attr("transform", `translate(-35, ${(height / 2)+50}), rotate(-90)`)
-        .text("In Poverty (%)");
+        .text("Lacks Healthcare (%)");
    
-    
     // Add circle labels
-    // circles.selectAll("text")
-    //     .data(stateData)
-    //     .enter()
-    //     .append("text")
-    //         .attr("x", function(d) {
-    //             return xLinearScale(d.healthcare);
-    //         })
-    //         .attr("y", function(d) {
-    //             return yLinearScale(d.poverty);
-    //         })
-    //     .text((d) => d.abbr);
-    
+    circles
+        .append("text")
+        .text(function(d) {
+            return d.abbr;
+        })
+        .attr("dx", function(d) {
+                return xLinearScale(d.poverty);
+            })
+        .attr("dy", function(d) {
+                return yLinearScale(d.healthcare);
+            })
+        .attr("font-size", "11px")
+        .attr("fill", "white")
+        .attr("transform", `translate(-6.8, 3)`);
+        
 });
